@@ -29,22 +29,20 @@ std::shared_ptr<Directory> Directory::makeDirectory(std::string name, std::weak_
 }
 
 std::shared_ptr<Directory> Directory::addDirectory(const std::string& child_name) {
-    if(this->getDir(child_name) || child_name==".." || child_name==".")
-        return nullptr;
+    if(this->children.count(child_name)>0 || child_name==".." || child_name==".")
+        return std::shared_ptr<Directory>();
     std::shared_ptr<Directory> dir = Directory::makeDirectory(child_name, this->self);
     children[child_name] = dir;
     return dir;
 }
 
 std::shared_ptr<Directory> Directory::getRoot(){
-    if(Directory::root == nullptr){
-        Directory* dir = new Directory("/");
-        std::shared_ptr<Directory> ptr = std::shared_ptr<Directory>(dir);
-        ptr->self = ptr;
-        ptr->father = ptr;
-        Directory::root = ptr;
+    if(root == nullptr){
+        root = std::shared_ptr<Directory>(new Directory("/"));
+        root->self = root;
+        root->father = root;
     }
-    return Directory::root;
+    return root;
 }
 
 std::shared_ptr<File> Directory::addFile(const std::string &nome, uintmax_t size) {
